@@ -1,0 +1,6 @@
+{{ range .Venue.TableCodes }}
+  <li class="list-group-item bg-primary text-white">
+    <a href="{{ .Code }}">{{ .Code }}</a>
+    <img src="data:image/png;base64,{{ .Base64 }}" alt="Table Image">
+  </li>
+{{ end }}
