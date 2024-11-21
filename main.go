@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"os"
 	"vortex.studio/account/internal/handlers"
 	"vortex.studio/account/internal/repo"
 )
@@ -14,8 +15,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 
-	// TODO: Get mongoDB connection string from environment variable or config file
-	clientOptions := options.Client().ApplyURI("mongodb://admin:secretpassword@localhost:27017")
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGODB_CONN_STRING"))
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
