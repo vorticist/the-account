@@ -1,6 +1,23 @@
-{{ range .Venue.TableCodes }}
-  <li class="list-group-item bg-primary text-white">
-    <a href="{{ .Code }}">{{ .Code }}</a>
-    <img src="data:image/png;base64,{{ .Base64 }}" alt="Table Image">
-  </li>
+{{ range .Venues }}
+<div class="accordion-item">
+  <h2 class="accordion-header">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapse-{{ makeURLSafe .Name }}" aria-expanded="false"
+            aria-controls="collapse-{{ makeURLSafe .Name }}">
+      {{ .Name }}
+    </button>
+  </h2>
+  <div
+          id="collapse-{{ makeURLSafe .Name }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ makeURLSafe .Name }}"
+          data-bs-parent="#accordionExample">
+    <div class="accordion-body">
+      {{ range .TableCodes }}
+      <li class="list-group-item bg-primary text-white">
+        <a href="{{ .CodeUrl }}">{{ .Code }}</a>
+        <img src="data:image/png;base64,{{ .Base64 }}" alt="Table Image" style="max-width: 150px; max-height: 150px;">
+      </li>
+      {{ end }}
+    </div>
+  </div>
+</div>
 {{ end }}

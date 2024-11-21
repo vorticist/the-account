@@ -1,14 +1,23 @@
 package structs
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Venue struct {
-	ID          int         `json:"id"`
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	Image       string      `json:"image"`
-	TableCodes  []TableCode `json:"table_codes"`
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name        string             `json:"name" bson:"name"`
+	Description string             `json:"description" bson:"description"`
+	Image       string             `json:"image" bson:"image"`
+	TableCodes  []TableCode        `json:"table_codes" bson:"table_codes"`
 }
 
 type TableCode struct {
-	Code   string `json:"code"`
-	Base64 string `json:"base64"`
+	Code    string `json:"code" bson:"code"`
+	CodeUrl string `json:"code_url" bson:"code_url"`
+	Base64  string `json:"base64" bson:"-"`
+}
+
+type ActiveTables struct {
+	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	TableCode string             `json:"table_code" bson:"table_code"`
+	ClientID  string             `json:"client_id" bson:"client_id"`
 }
