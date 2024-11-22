@@ -19,9 +19,14 @@ type Subcategory struct {
 
 // MenuItem represents a single item in the menu.
 type MenuItem struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
+	Name        string  `json:"name" bson:"name"`
+	Description string  `json:"description" bson:"description"`
+	Price       float64 `json:"price" bson:"price"`
+}
+
+type OrderItem struct {
+	*MenuItem
+	Amount int `json:"amount" bson:"amount"`
 }
 
 var MenuJsonStr = `

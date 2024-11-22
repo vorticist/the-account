@@ -16,8 +16,10 @@ type TableCode struct {
 	Base64  string `json:"base64" bson:"-"`
 }
 
-type ActiveTables struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	TableCode string             `json:"table_code" bson:"table_code"`
-	ClientID  string             `json:"client_id" bson:"client_id"`
+type ActiveTable struct {
+	ID           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	TableCode    string             `json:"table_code" bson:"table_code"`
+	ClientID     string             `json:"client_id" bson:"client_id"`
+	OrderHistory []OrderItem        `json:"order_history" bson:"order_history"`
+	PreOrder     []OrderItem        `json:"pre_order" bson:"pre_order"`
 }

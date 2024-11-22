@@ -30,14 +30,19 @@ func main() {
 	venueRepository := repo.NewVenueRepository(db)
 	activeTablesRepo := repo.NewActiveTablesRepository(db)
 
-	handlers := handlers.NewHandler(*venueRepository, activeTablesRepo)
+	adminHandler := handlers.NewAdminHandler(*venueRepository)
+	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo)
 
-	router.HandleFunc("/admin", handlers.AccountHandler).Methods("GET")
-	router.HandleFunc("/add-table", handlers.AddTableHandler).Methods("POST")
-	router.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
-	router.HandleFunc("/logout", handlers.LogoutHandler).Methods("GET")
-	router.HandleFunc("/venue", handlers.VenueHandler).Methods("POST")
-	router.HandleFunc("/table/{code}", handlers.CodeHandler).Methods("GET", "POST")
+	router.HandleFunc("/admin", adminHandler.AccountHandler).Methods("GET")
+	router.HandleFunc("/table", adminHandler.AddTableHandler).Methods("POST")
+	router.HandleFunc("/login", adminHandler.LoginHandler).Methods("POST")
+	router.HandleFunc("/logout", adminHandler.LogoutHandler).Methods("GET")
+	router.HandleFunc("/venue", adminHandler.VenueHandler).Methods("POST")
+
+	router.HandleFunc("/table/{code}", tablesHandler.CodeHandler).Methods("GET", "POST")
+	router.HandleFunc("/order/{code}", tablesHandler.OrderHandler).Methods("POST", "GET")
+	router.HandleFunc("/order/{code}/place", tablesHandler.PlaceOrderHandler).Methods("POST")
+	router.HandleFunc("/history/{code}", tablesHandler.OrderHistoryHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":9090", router))
 }

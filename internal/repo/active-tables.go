@@ -17,15 +17,19 @@ func NewActiveTablesRepository(db *mongo.Database) *ActiveTablesRepository {
 	}
 }
 
-func (sr *ActiveTablesRepository) TableActive(session *structs.ActiveTables) (*mongo.InsertOneResult, error) {
+func (sr *ActiveTablesRepository) TableActive(session *structs.ActiveTable) (*mongo.InsertOneResult, error) {
 	return sr.Collection.InsertOne(context.Background(), session)
 }
 
-func (sr *ActiveTablesRepository) GetSessionForTable(code string) (*structs.ActiveTables, error) {
-	var session structs.ActiveTables
+func (sr *ActiveTablesRepository) GetSessionForTable(code string) (*structs.ActiveTable, error) {
+	var session structs.ActiveTable
 	err := sr.Collection.FindOne(context.Background(), bson.M{"table_code": code}).Decode(&session)
 	if err != nil {
 		return nil, err
 	}
 	return &session, nil
+}
+
+func (sr *ActiveTablesRepository) UpdateSession(session *structs.ActiveTable) (*mongo.UpdateResult, error) {
+	return sr.Collection.UpdateOne(context.Background(), bson.M{"table_code": session.TableCode}, bson.M{"$set": session})
 }

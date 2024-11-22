@@ -12,7 +12,8 @@
     <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
         {{range $index, $category := .Menu.Menu}}
         <li class="nav-item" role="presentation">
-            <button class="nav-link {{if eq $index 0}}active{{end}}" id="tab-{{$index}}" data-bs-toggle="tab" data-bs-target="#content-{{$index}}" type="button" role="tab">
+            <button class="nav-link {{if eq $index 0}}active{{end}}" id="tab-{{$index}}" data-bs-toggle="tab"
+                    data-bs-target="#content-{{$index}}" type="button" role="tab">
                 {{$category.Category}}
             </button>
         </li>
@@ -26,15 +27,26 @@
                 <h4>{{.Subcategory}}</h4>
                 <ul class="list-group">
                     {{range .Items}}
-                    <li class="list-group-item">{{.Name}} - ${{.Price}}</li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{.Name}} - ${{.Price}}</span>
+                        <button class="btn btn-primary btn-sm" hx-post="/order/{{ $.TableCode }}" hx-vals="{{ getItemVals . }}" hx-swap="none">Add to Order
+                        </button>
+                    </li>
                     {{end}}
                 </ul>
             </div>
             {{end}}
-        </div>        {{end}}
+        </div>
+        {{end}}
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    </div>
+    <nav class="navbar fixed-bottom bg-body-tertiary">
+        <div class="container-fluid justify-content-center">
+            <a href="/history/{{ .TableCode }}" class="btn btn-outline-primary mx-2">Order History</a>
+            <a href="/order/{{ .TableCode }}" class="btn btn-outline-success mx-2">Current Order</a>
+        </div>
+    </nav>
+</div><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/htmx.org@2.0.3"></script>
