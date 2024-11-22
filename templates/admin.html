@@ -9,8 +9,41 @@
 </head>
 <body>
 <div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Open Sessions</h1>
+            <div class="accordion" id="sessions-list">
+                {{ range .OpenSessions }}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#session-collapse-{{ .ID.Hex }}" aria-expanded="false"
+                                aria-controls="session-collapse-{{ .ID.Hex }}">
+                            Session #{{ .TableCode }} - {{ getOrderTotal .OrderHistory }}
+                        </button>
+                    </h2>
+                    <div id="session-collapse-{{ .ID.Hex }}" class="accordion-collapse collapse"
+                         data-bs-parent="#sessions-list">
+                        <div class="accordion-body">
+                            <p>Table: {{ .TableCode }}</p>
+                            <ul class="list-group list-group-flush small">
+                                {{ range .OrderHistory }}
+                                <li class="list-group-item">{{ .Name }} - ${{ .Price }}</li>
+                                {{ end }}
+                            </ul>
+                            Total: ${{ getOrderTotal .OrderHistory }}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#sessionModal-{{ .ID.Hex }}" hx-post="/close/{{ .TableCode }}" hx-vals="{{ getCloseOrderVals .OrderHistory }}" hx-target="#sessions-list" hx-swap="innerHTML">
+                                {{ if .OrderHistory }}Pay{{ else }}Cancel{{ end }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+    </div>
     <div class="row mt-4 g-4">
-
         <div class="col-8">
             <h1 class="mb-4">Venues</h1>
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/lithammer/shortuuid/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"html/template"
 	"regexp"
 	"strings"
@@ -17,8 +18,10 @@ var (
 )
 
 var templateFuncs = template.FuncMap{
-	"makeURLSafe": makeURLSafe,
-	"getItemVals": getItemVals,
+	"makeURLSafe":       makeURLSafe,
+	"getItemVals":       getItemVals,
+	"getCloseOrderVals": getCloseOrderVals,
+	"getOrderTotal":     getOrderTotal,
 }
 
 type Handler struct {
@@ -67,4 +70,27 @@ func generateTableCodes(venue *structs.Venue, howMany int) error {
 
 func getItemVals(item structs.MenuItem) string {
 	return fmt.Sprintf(`{"name": "%s", "description": "%s", "price": %v, "amount": 1}`, item.Name, item.Description, item.Price)
+}
+
+func getCloseOrderVals(order []structs.OrderItem) string {
+	status := ""
+	if len(order) <= 0 {
+		status = "canceled"
+	} else {
+		status = "paid"
+	}
+
+	return fmt.Sprintf(`{"status": "%s"}`, status)
+}
+
+func getOrderTotal(order []structs.OrderItem) float64 {
+	var total float64
+	for _, item := range order {
+		total += item.Price * float64(item.Amount)
+	}
+	return total
+}
+
+func getStringID(id primitive.ObjectID) string {
+	return id.Hex()
 }

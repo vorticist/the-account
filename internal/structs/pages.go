@@ -1,8 +1,9 @@
 package structs
 
 type AdminPage struct {
-	Title  string
-	Venues []Venue
+	Title        string
+	Venues       []Venue
+	OpenSessions []*ActiveTable
 }
 
 type MenuPage struct {

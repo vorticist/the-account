@@ -12,12 +12,14 @@ import (
 )
 
 type AdminHandler struct {
-	venueRepo *repo.VenueRepository
+	venueRepo  *repo.VenueRepository
+	tablesRepo *repo.ActiveTablesRepository
 }
 
-func NewAdminHandler(repository repo.VenueRepository) *AdminHandler {
+func NewAdminHandler(repository repo.VenueRepository, tablesRepo *repo.ActiveTablesRepository) *AdminHandler {
 	return &AdminHandler{
-		venueRepo: &repository,
+		venueRepo:  &repository,
+		tablesRepo: tablesRepo,
 	}
 }
 
@@ -38,9 +40,18 @@ func (h *AdminHandler) AccountHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error fetching venues", http.StatusInternalServerError)
 		return
 	}
+
+	openSessions, err := h.tablesRepo.GetOpenSessions(r.Context())
+	if err != nil {
+		logger.Errorf("error fetching open sessions: %v", err)
+		http.Error(w, "Error fetching open sessions", http.StatusInternalServerError)
+		return
+	}
+
 	adminPage := structs.AdminPage{
-		Title:  "Table Codes",
-		Venues: venues,
+		Title:        "Table Codes",
+		Venues:       venues,
+		OpenSessions: openSessions,
 	}
 	tmpl := template.Must(template.New("admin.html").Funcs(templateFuncs).ParseFiles("templates/admin.html"))
 	err = tmpl.Execute(w, adminPage)

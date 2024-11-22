@@ -29,9 +29,10 @@ func main() {
 	db := client.Database("account")
 	venueRepository := repo.NewVenueRepository(db)
 	activeTablesRepo := repo.NewActiveTablesRepository(db)
+	eventsRepo := repo.NewEventsRepo(db)
 
-	adminHandler := handlers.NewAdminHandler(*venueRepository)
-	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo)
+	adminHandler := handlers.NewAdminHandler(*venueRepository, activeTablesRepo)
+	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo, eventsRepo)
 
 	router.HandleFunc("/admin", adminHandler.AccountHandler).Methods("GET")
 	router.HandleFunc("/table", adminHandler.AddTableHandler).Methods("POST")
@@ -43,6 +44,7 @@ func main() {
 	router.HandleFunc("/order/{code}", tablesHandler.OrderHandler).Methods("POST", "GET")
 	router.HandleFunc("/order/{code}/place", tablesHandler.PlaceOrderHandler).Methods("POST")
 	router.HandleFunc("/history/{code}", tablesHandler.OrderHistoryHandler).Methods("GET")
+	router.HandleFunc("/close/{code}", tablesHandler.CloseOrderHandler).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":9090", router))
 }

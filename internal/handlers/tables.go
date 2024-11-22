@@ -17,12 +17,14 @@ import (
 type TableHandler struct {
 	tablesRepo *repo.ActiveTablesRepository
 	venuesRepo *repo.VenueRepository
+	eventsRepo *repo.EventsRepo
 }
 
-func NewTablesHandler(venueRepo *repo.VenueRepository, activeTablesRepo *repo.ActiveTablesRepository) *TableHandler {
+func NewTablesHandler(venueRepo *repo.VenueRepository, activeTablesRepo *repo.ActiveTablesRepository, eventsRepo *repo.EventsRepo) *TableHandler {
 	return &TableHandler{
 		tablesRepo: activeTablesRepo,
 		venuesRepo: venueRepo,
+		eventsRepo: eventsRepo,
 	}
 
 }
@@ -316,4 +318,58 @@ func (h *TableHandler) OrderHistoryHandler(w http.ResponseWriter, r *http.Reques
 		http.Redirect(w, r, fmt.Sprintf("/table/%s", code), http.StatusSeeOther)
 		return
 	}
+}
+
+func (h *TableHandler) CloseOrderHandler(w http.ResponseWriter, r *http.Request) {
+	code := mux.Vars(r)["code"]
+	logger.Infof("got code: %v", code)
+	session, err := h.tablesRepo.GetSessionForTable(code)
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		logger.Errorf("error fetching session: %v", err)
+		http.Error(w, "Error fetching session", http.StatusInternalServerError)
+		return
+	}
+
+	if session == nil {
+		logger.Errorf("no active session found for code: %v", code)
+		http.Error(w, "No active session found", http.StatusNotFound)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		logger.Errorf("error parsing form: %v", err)
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
+	}
+
+	status := r.FormValue("status")
+	if status != "paid" && status != "canceled" {
+		logger.Errorf("invalid order status: %v", status)
+		http.Error(w, "Invalid order status", http.StatusBadRequest)
+		return
+	}
+	logger.Infof("updating session status to: %v", status)
+	event := structs.Event{
+		Status: status,
+		Order:  *session,
+	}
+	_, err = h.eventsRepo.RecordEvent(&event)
+	if err != nil {
+		logger.Errorf("error recording event: %v", err)
+		http.Error(w, "Error recording event", http.StatusInternalServerError)
+		return
+	}
+
+	h.tablesRepo.DeleteSession(session.TableCode)
+
+	sessions, err := h.tablesRepo.GetOpenSessions(r.Context())
+	if err != nil {
+		logger.Errorf("error fetching open sessions: %v", err)
+		http.Error(w, "Error fetching open sessions", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl := template.Must(template.New("open-sessions.html").Funcs(templateFuncs).ParseFiles("templates/open-sessions.html"))
+	tmpl.Execute(w, sessions)
 }

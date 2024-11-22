@@ -23,3 +23,9 @@ type ActiveTable struct {
 	OrderHistory []OrderItem        `json:"order_history" bson:"order_history"`
 	PreOrder     []OrderItem        `json:"pre_order" bson:"pre_order"`
 }
+
+type Event struct {
+	ID     primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Status string             `json:"status" bson:"status"`
+	Order  ActiveTable        `json:"order" bson:"order"`
+}

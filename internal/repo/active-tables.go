@@ -33,3 +33,21 @@ func (sr *ActiveTablesRepository) GetSessionForTable(code string) (*structs.Acti
 func (sr *ActiveTablesRepository) UpdateSession(session *structs.ActiveTable) (*mongo.UpdateResult, error) {
 	return sr.Collection.UpdateOne(context.Background(), bson.M{"table_code": session.TableCode}, bson.M{"$set": session})
 }
+
+func (sr *ActiveTablesRepository) GetOpenSessions(ctx context.Context) ([]*structs.ActiveTable, error) {
+	cursor, err := sr.Collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	var sessions []*structs.ActiveTable
+	if err := cursor.All(ctx, &sessions); err != nil {
+		return nil, err
+	}
+
+	return sessions, nil
+}
+
+func (sr *ActiveTablesRepository) DeleteSession(code string) (*mongo.DeleteResult, error) {
+	return sr.Collection.DeleteOne(context.Background(), bson.M{"table_code": code})
+}
