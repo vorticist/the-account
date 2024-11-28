@@ -54,7 +54,7 @@ func generateTableCodes(venue *structs.Venue, howMany int) error {
 	venue.TableCodes = []structs.TableCode{}
 	for i := 0; i < howMany; i++ {
 		u := shortuuid.New()
-		tableCodeUrl := fmt.Sprintf("http://localhost:9090/table/%s", u)
+		tableCodeUrl := fmt.Sprintf("https://the-account.vortex.studio/table/%s", u)
 		qrCode, err := utils.GenerateQRCodeBase64(tableCodeUrl)
 		if err != nil {
 			return err
