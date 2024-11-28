@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: the-account
+  labels:
+    app: the-account
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: the-account
+  template:
+    metadata:
+      labels:
+        app: the-account
+    spec:
+      containers:
+        - name: the-account
+          image: registry.digitalocean.com/vortex-studio/the-account:latest
+          ports:
+            - containerPort: 9090
+          env:
+            - name: MONGODB_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-connection-secret
+                  key: MONGODB_URI
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: the-account-service
+spec:
+  selector:
+    app: the-account
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
+  type: ClusterIP
