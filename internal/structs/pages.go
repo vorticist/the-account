@@ -8,7 +8,7 @@ type AdminPage struct {
 
 type MenuPage struct {
 	Title     string
-	Menu      Menu
+	Menu      MenuData
 	TableCode string
 }
 

@@ -33,7 +33,7 @@ func main() {
 	menuRepo := repo.NewMenuRepository(db)
 
 	adminHandler := handlers.NewAdminHandler(*venueRepository, activeTablesRepo, menuRepo)
-	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo, eventsRepo)
+	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo, eventsRepo, menuRepo)
 
 	router.HandleFunc("/admin", adminHandler.AccountHandler).Methods("GET")
 	router.HandleFunc("/table", adminHandler.AddTableHandler).Methods("POST")

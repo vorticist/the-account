@@ -18,13 +18,15 @@ type TableHandler struct {
 	tablesRepo *repo.ActiveTablesRepository
 	venuesRepo *repo.VenueRepository
 	eventsRepo *repo.EventsRepo
+	menuRepo   *repo.MenuRepository
 }
 
-func NewTablesHandler(venueRepo *repo.VenueRepository, activeTablesRepo *repo.ActiveTablesRepository, eventsRepo *repo.EventsRepo) *TableHandler {
+func NewTablesHandler(venueRepo *repo.VenueRepository, activeTablesRepo *repo.ActiveTablesRepository, eventsRepo *repo.EventsRepo, menuRepo *repo.MenuRepository) *TableHandler {
 	return &TableHandler{
 		tablesRepo: activeTablesRepo,
 		venuesRepo: venueRepo,
 		eventsRepo: eventsRepo,
+		menuRepo:   menuRepo,
 	}
 
 }
@@ -92,7 +94,7 @@ func (h *TableHandler) CodeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	logger.Infof("found venue: %v", venue)
-	menu, err := h.venuesRepo.GetMenuForVenue(r.Context(), venue.ID)
+	menu, err := h.menuRepo.GetMenuByVenueID(venue.ID)
 	if err != nil {
 		logger.Errorf("error fetching menu: %v", err)
 		http.Error(w, "Error fetching menu", http.StatusInternalServerError)

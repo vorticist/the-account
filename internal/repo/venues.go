@@ -2,11 +2,8 @@ package repo
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/vorticist/logger"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"vortex.studio/account/internal/structs"
 	"vortex.studio/account/internal/utils"
@@ -83,15 +80,4 @@ func (vr *VenueRepository) DeleteVenue(ctx context.Context, venue structs.Venue)
 	filter := bson.M{"_id": venue.ID}
 	_, err := vr.Collection.DeleteOne(ctx, filter)
 	return err
-}
-
-func (vr *VenueRepository) GetMenuForVenue(ctx context.Context, id primitive.ObjectID) (*structs.Menu, error) {
-	var menu structs.Menu
-	err := json.Unmarshal([]byte(structs.MenuJsonStr), &menu)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		return nil, err
-	}
-
-	return &menu, nil
 }

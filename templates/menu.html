@@ -10,32 +10,27 @@
 <body>
 <div class="container mt-5">
     <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
-        {{range $index, $category := .Menu.Menu}}
+        {{range $index, $category := .Menu.Categories}}
         <li class="nav-item" role="presentation">
             <button class="nav-link {{if eq $index 0}}active{{end}}" id="tab-{{$index}}" data-bs-toggle="tab"
                     data-bs-target="#content-{{$index}}" type="button" role="tab">
-                {{$category.Category}}
+                {{$category.Name}}
             </button>
         </li>
         {{end}}
     </ul>
     <div class="tab-content mt-3" id="tabContent">
-        {{range $index, $category := .Menu.Menu}}
+        {{range $index, $category := .Menu.Categories}}
         <div class="tab-pane fade {{if eq $index 0}}show active{{end}}" id="content-{{$index}}" role="tabpanel">
-            {{range $category.Subcategories}}
-            <div class="mb-3">
-                <h4>{{.Subcategory}}</h4>
-                <ul class="list-group">
-                    {{range .Items}}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>{{.Name}} - ${{.Price}}</span>
-                        <button class="btn btn-primary btn-sm" hx-post="/order/{{ $.TableCode }}" hx-vals="{{ getItemVals . }}" hx-swap="none">Add to Order
-                        </button>
-                    </li>
-                    {{end}}
-                </ul>
-            </div>
-            {{end}}
+            <ul class="list-group">
+                {{range .Items}}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{.Name}} - ${{.Price}}</span>
+                    <button class="btn btn-primary btn-sm" hx-post="/order/{{ $.TableCode }}" hx-vals="{{ getItemVals . }}" hx-swap="none">Add to Order
+                    </button>
+                </li>
+                {{end}}
+            </ul>
         </div>
         {{end}}
     </div>
