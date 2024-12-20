@@ -6,6 +6,7 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"html/template"
+	"os"
 	"regexp"
 	"strings"
 	"vortex.studio/account/internal/repo"
@@ -54,7 +55,15 @@ func generateTableCodes(venue *structs.Venue, howMany int) error {
 	venue.TableCodes = []structs.TableCode{}
 	for i := 0; i < howMany; i++ {
 		u := shortuuid.New()
-		tableCodeUrl := fmt.Sprintf("https://the-account.vortex.studio/table/%s", u)
+
+		hostname := "https://the-account.vortex.studio"
+		env := os.Getenv("ENVIRONMENT")
+		if env == "local" {
+			hostname = "http://localhost:9090"
+		}
+
+		// TODO: generate url based on environment
+		tableCodeUrl := fmt.Sprintf("%v/table/%s", hostname, u)
 		qrCode, err := utils.GenerateQRCodeBase64(tableCodeUrl)
 		if err != nil {
 			return err
