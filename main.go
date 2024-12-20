@@ -30,8 +30,9 @@ func main() {
 	venueRepository := repo.NewVenueRepository(db)
 	activeTablesRepo := repo.NewActiveTablesRepository(db)
 	eventsRepo := repo.NewEventsRepo(db)
+	menuRepo := repo.NewMenuRepository(db)
 
-	adminHandler := handlers.NewAdminHandler(*venueRepository, activeTablesRepo)
+	adminHandler := handlers.NewAdminHandler(*venueRepository, activeTablesRepo, menuRepo)
 	tablesHandler := handlers.NewTablesHandler(venueRepository, activeTablesRepo, eventsRepo)
 
 	router.HandleFunc("/admin", adminHandler.AccountHandler).Methods("GET")

@@ -5,22 +5,20 @@ type Menu struct {
 	Menu []Category `json:"menu"`
 }
 
-// Category represents a category in the menu, like Food, Drinks, or Amenities.
-type Category struct {
-	Category      string        `json:"category"`
-	Subcategories []Subcategory `json:"subcategories"`
+type MenuData struct {
+	Categories []Category `json:"categories"`
 }
 
-// Subcategory represents a subcategory within a category, like Starters or Main Course.
-type Subcategory struct {
-	Subcategory string     `json:"subcategory"`
-	Items       []MenuItem `json:"items"`
+// Category represents a category in the menu, like Food, Drinks, or Amenities.
+type Category struct {
+	Name  string     `json:"name"`
+	Items []MenuItem `json:"items"`
 }
 
 // MenuItem represents a single item in the menu.
 type MenuItem struct {
 	Name        string  `json:"name" bson:"name"`
-	Description string  `json:"description" bson:"description"`
+	Description string  `json:"description,omitempty" bson:"description,omitempty"`
 	Price       float64 `json:"price" bson:"price"`
 }
 

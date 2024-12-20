@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/vorticist/logger"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"html/template"
 	"net/http"
@@ -16,12 +17,14 @@ import (
 type AdminHandler struct {
 	venueRepo  *repo.VenueRepository
 	tablesRepo *repo.ActiveTablesRepository
+	menuRepo   *repo.MenuRepository
 }
 
-func NewAdminHandler(repository repo.VenueRepository, tablesRepo *repo.ActiveTablesRepository) *AdminHandler {
+func NewAdminHandler(repository repo.VenueRepository, tablesRepo *repo.ActiveTablesRepository, menuRepo *repo.MenuRepository) *AdminHandler {
 	return &AdminHandler{
 		venueRepo:  &repository,
 		tablesRepo: tablesRepo,
+		menuRepo:   menuRepo,
 	}
 }
 
@@ -166,7 +169,12 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ar := menu.StartMenuFileAnalysis(file)
-	logger.Infof("waited for result -> %v", <-ar)
+	menuAnalysisResult := <-ar
+	if menuAnalysisResult.Err != nil {
+		logger.Errorf("error analyzing menu file: %v", menuAnalysisResult.Err)
+		http.Error(w, "Error analyzing menu file", http.StatusInternalServerError)
+		return
+	}
 
 	venue := structs.Venue{
 		Name: name,
@@ -178,9 +186,22 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the venue to the database
-	if _, err := h.venueRepo.CreateVenue(&venue); err != nil {
+	insertResult, err := h.venueRepo.CreateVenue(&venue)
+	if err != nil {
 		logger.Errorf("error creating venue: %v", err)
 		http.Error(w, "Failed to create venue", http.StatusInternalServerError)
+		return
+	}
+	venueID, ok := insertResult.InsertedID.(primitive.ObjectID)
+	if !ok {
+		logger.Errorf("error converting InsertedID to ObjectID")
+		http.Error(w, "Error creating venue", http.StatusInternalServerError)
+		return
+	}
+	menuAnalysisResult.Result.VenueId = venueID
+	_, err = h.menuRepo.CreateMenu(menuAnalysisResult.Result)
+	if err != nil {
+		logger.Errorf("error creating menu: %v", err)
 		return
 	}
 
