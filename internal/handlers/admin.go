@@ -9,7 +9,8 @@ import (
 	"strconv"
 	"vortex.studio/account/internal/repo"
 	"vortex.studio/account/internal/structs"
-	"vortex.studio/account/internal/utils"
+
+	menu "vortex.studio/account/internal/menu-analyzer"
 )
 
 type AdminHandler struct {
@@ -164,14 +165,8 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error getting file from form", http.StatusBadRequest)
 		return
 	}
-
-	analysis, err := utils.SendFileForAnalysis(file)
-	if err != nil {
-		logger.Errorf("error sending file to analysis: %v", err)
-		return
-	}
-
-	logger.Infof("analysis: %v", analysis)
+	ar := menu.StartMenuFileAnalysis(file)
+	logger.Infof("waited for result -> %v", <-ar)
 
 	venue := structs.Venue{
 		Name: name,
