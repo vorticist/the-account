@@ -36,7 +36,7 @@ func (h *TableHandler) CodeHandler(w http.ResponseWriter, r *http.Request) {
 	// Check for existing client cookie
 	clientID := ""
 	cookie, err := r.Cookie("client_id")
-	if err == http.ErrNoCookie {
+	if errors.Is(err, http.ErrNoCookie) {
 		// Generate new client ID if cookie doesn't exist
 		clientID = uuid.New().String()
 		http.SetCookie(w, &http.Cookie{
@@ -45,7 +45,7 @@ func (h *TableHandler) CodeHandler(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 			MaxAge:   86400 * 30, // 30 days
 			HttpOnly: true,
-			Secure:   true,
+			Secure:   false,
 			SameSite: http.SameSiteStrictMode,
 		})
 	} else {

@@ -17,6 +17,7 @@ spec:
       containers:
         - name: the-account
           image: registry.digitalocean.com/vortex-studio/the-account:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
           env:

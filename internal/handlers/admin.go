@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"vortex.studio/account/internal/repo"
 	"vortex.studio/account/internal/structs"
+	"vortex.studio/account/internal/utils"
 )
 
 type AdminHandler struct {
@@ -138,7 +139,7 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse the form data into a Venue struct
-	if err := r.ParseForm(); err != nil {
+	if err := r.ParseMultipartForm(10 << 20); err != nil { // 10MB limit
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
@@ -155,6 +156,23 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Number of tables must be a valid number", http.StatusBadRequest)
 		return
 	}
+
+	// Get file from form
+	file, _, err := r.FormFile("menuFile")
+	if err != nil {
+		logger.Errorf("error getting file from form: %v", err)
+		http.Error(w, "Error getting file from form", http.StatusBadRequest)
+		return
+	}
+
+	analysis, err := utils.SendFileForAnalysis(file)
+	if err != nil {
+		logger.Errorf("error sending file to analysis: %v", err)
+		return
+	}
+
+	logger.Infof("analysis: %v", analysis)
+
 	venue := structs.Venue{
 		Name: name,
 	}
@@ -170,6 +188,7 @@ func (h *AdminHandler) VenueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to create venue", http.StatusInternalServerError)
 		return
 	}
+
 	venues, err := h.venueRepo.GetAllVenues(r.Context())
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		logger.Errorf("error fetching venues: %v", err)

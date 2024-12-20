@@ -77,7 +77,7 @@
         <div class="col-4">
             <h1 class="mb-4">Add Venue</h1>
 
-            <form hx-post="/venue" hx-target="#venue-list" hx-indicator="#spinner">
+            <form hx-post="/venue" hx-target="#venue-list" hx-indicator="#spinner" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="name" class="form-label">Venue Name</label>
                     <input type="text" class="form-control" id="name" name="name">
@@ -86,6 +86,11 @@
                     <label for="numberOfTables" class="form-label">How many tables?</label>
                     <input type="number" class="form-control" id="numberOfTables" name="numberOfTables">
                 </div>
+                <div class="mb-3">
+                    <label for="menuFile" class="form-label">Upload Menu (Image or PDF)</label>
+                    <input type="file" class="form-control" id="menuFile" name="menuFile" accept="image/*,.pdf">
+                </div>
+
                 <button type="submit" class="btn btn-primary">
                     <span class="spinner-border spinner-border-sm htmx-indicator" id="spinner" role="status"
                           aria-hidden="true"></span>

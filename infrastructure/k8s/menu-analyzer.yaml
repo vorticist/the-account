@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: menu-analyzer
+  labels:
+    app: menu-analyzer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: menu-analyzer
+  template:
+    metadata:
+      name: menu-analyzer
+      labels:
+        app: menu-analyzer
+    spec:
+      containers:
+        - name: menu-analyzer
+          image: registry.digitalocean.com/vortex-studio/menu-analyzer
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: menu-analyzer-service
+spec:
+  selector:
+    app: menu-analyzer
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
