@@ -26,6 +26,13 @@ spec:
                 secretKeyRef:
                   name: mongodb-connection-secret
                   key: MONGODB_URI
+            - name: MENU_ANALYZER_URL
+              value: http://menu-analyzer-service:8000/analyze-menu
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-key-secret
+                  key: OPENAI_API_KEY
 ---
 apiVersion: v1
 kind: Service
