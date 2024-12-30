@@ -28,6 +28,15 @@ spec:
                   key: MONGODB_URI
             - name: MENU_ANALYZER_URL
               value: http://menu-analyzer-service:8000/analyze-menu
+            - name: KEYCLOAK_URL
+              value: https://keycloak.vortex.studio/auth
+            - name: KEYCLOAK_CLIENT_ID
+              value: the-account
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-client-secret
+                  key: KEYCLOAK_CLIENT_SECRET
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:

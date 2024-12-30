@@ -47,5 +47,7 @@ func main() {
 	router.HandleFunc("/history/{code}", tablesHandler.OrderHistoryHandler).Methods("GET")
 	router.HandleFunc("/close/{code}", tablesHandler.CloseOrderHandler).Methods("POST")
 
+	router.HandleFunc("/tenant", handlers.CreateTenantHandler).Methods("POST")
+
 	log.Fatal(http.ListenAndServe(":9090", router))
 }

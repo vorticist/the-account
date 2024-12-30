@@ -1,0 +1,28 @@
+postgresql:
+  enabled: false
+
+externalDatabase:
+  host: keycloak-postgres.keycloak.svc.cluster.local
+  port: 5432
+  user:
+    secretName: keycloak-postgres-credentials
+    key: POSTGRES_USER
+  password:
+    secretName: keycloak-postgres-credentials
+    key: POSTGRES_PASSWORD
+  database:
+    secretName: keycloak-postgres-credentials
+    key: POSTGRES_DB
+ingress:
+  enabled: true
+  hostname: keycloak.vortex.studio
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  tls: true
+  extraHosts:
+    - name: keycloak.vortex.studio
+      path: /
+  extraTls:
+    - hosts:
+        - keycloak.vortex.studio
+      secretName: keycloak-tls
