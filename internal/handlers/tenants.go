@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/vorticist/logger"
 	"io"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
@@ -67,12 +68,15 @@ func CreateTenantHandler(w http.ResponseWriter, r *http.Request) {
 
 	var tenantRequest TenantRequest
 	if err := json.Unmarshal(body, &tenantRequest); err != nil {
+		logger.Errorf("Error unmarshalling JSON: %v", err)
+		logger.Errorf("Request body: %s", string(body))
 		http.Error(w, "Invalid JSON payload", http.StatusBadRequest)
 		return
 	}
 
 	// Validate required fields
 	if tenantRequest.AdminUsername == "" || tenantRequest.BusinessName == "" {
+		logger.Errorf("Missing required fields: %v", tenantRequest)
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
 	}

@@ -49,5 +49,7 @@ func main() {
 
 	router.HandleFunc("/tenant", handlers.CreateTenantHandler).Methods("POST")
 
+	router.HandleFunc("/vc", handlers.VersionHandler).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":9090", router))
 }
